@@ -141,3 +141,63 @@ export function logout(req,res){
   res.clearCookie("jwt");
   res.status(200).json({ success: true, message: "Logout Successful" });
 }
+
+
+
+// Controller to handle user onboarding
+export async function onboard(req, res) {
+  try {
+    // Get the authenticated user's ID
+    const userId = req.user._id;
+
+    // Extract onboarding fields from the request body
+    const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
+
+    // Validate that all required fields are present
+    if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
+      return res.status(400).json({ // It responds with a 400 Bad Request and tells which fields are missing.
+        message: "All fields are required",
+        missingFields: [
+          !fullName && "fullName",
+          !bio && "bio",
+          !nativeLanguage && "nativeLanguage",
+          !learningLanguage && "learningLanguage",
+          !location && "location",
+        ].filter(Boolean),
+      });
+    }
+
+    // Update user details in the database
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...req.body,
+        isOnboarded: true, // mark as onboarded
+      },
+      { new: true }
+    );
+
+    // If user not found, return 404
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    // Register or update the user in Stream Chat
+    try {
+      await upsertStreamUser({
+        id: updatedUser._id.toString(),
+        name: updatedUser.fullName,
+        image: updatedUser.profilePic || "",
+      });
+      console.log(`Stream user updated after onboarding for ${updatedUser.fullName}`);
+    } catch (error) {
+      console.log("Error updating Stream user during onboarding:", streamError.message);
+    }
+
+    // Respond with success and updated user data
+    res.status(200).json({ success: true, user: updatedUser });
+
+  } catch (error) {
+    // Handle unexpected server errors
+    console.error("Onboarding error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
