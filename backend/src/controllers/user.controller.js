@@ -1,3 +1,7 @@
+import User from "../models/User.js";
+import FriendRequest from "../models/FriendRequest.js";
+
+
 export async function getRecommendedUsers(req, res) {
   try {
     // Get the logged-in user's ID and details
@@ -8,7 +12,7 @@ export async function getRecommendedUsers(req, res) {
     // 1. Are not the current user (Don’t show the logged-in user themselves)
     // 2. Are not already friends
     // 3. Have completed onboarding
-    const getRecommendedUsers = await User.find({
+    const recommendedUsers = await User.find({
       $and: [                                        // $and means: all these 3 conditions must be true.
         { _id: { $ne: currentUserId } },
         { _id: { $nin: currentUser.friends } },
@@ -17,7 +21,7 @@ export async function getRecommendedUsers(req, res) {
     });
 
     // Return the recommended users
-    res.status(200).json(getRecommendedUsers);
+    res.status(200).json(recommendedUsers);
   } catch (error) {
     console.log("Error in getRecommendedUsers controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
