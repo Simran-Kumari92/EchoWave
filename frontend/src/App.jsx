@@ -16,9 +16,13 @@ import { Toaster, toast } from "react-hot-toast";
 
 import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
+import Layout from "./components/Layout.jsx";
+import { useThemeStore } from "./store/useThemeStore.js";
+
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
+  const {theme} = useThemeStore();
 
   const isAuthenticated = Boolean(authUser)
   const isOnboarded = authUser?.isOnboarded
@@ -27,12 +31,14 @@ const App = () => {
 
   return (
     // Full screen container with night theme (likely using DaisyUI or custom CSS)
-    <div className="h-screen" data-theme="night">
+    <div className="h-screen" data-theme={theme}>
 
       {/* All frontend routes are declared here */}
       <Routes>
         <Route path="/" element={isAuthenticated && isOnboarded ? (
-          <HomePage />
+          <Layout showSidebar={true}>
+            <HomePage />
+          </Layout>
         ) : (
           <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
         )
