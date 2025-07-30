@@ -1,9 +1,14 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Simran-Kumari92/EchoWave/main/frontend/public/live-chat.png" alt="EchoWave Screenshot" />
+  <img src="https://raw.githubusercontent.com/Simran-Kumari92/EchoWave/main/frontend/public/live-chat.png" alt="EchoWave Screenshot" width="300" />
 </p>
 
-
 <h1 align="center">🌍 Echowave — Language Exchange Platform</h1>
+
+<p align="center">
+  <a href="https://echowave-4jqa.onrender.com" target="_blank">🔗 <b>Live Demo</b></a>
+</p>
+
+<br>
 
 Echowave is a complete real-time **language exchange platform** where users can interact via video calls, chat messages, and share media — all **for free**.
 
