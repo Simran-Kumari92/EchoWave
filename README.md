@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Simran-Kumari92/EchoWave/main/frontend/public/live-chat.png" alt="EchoWave Screenshot" />
+</p>
+
+
 <h1 align="center">🌍 Echowave — Language Exchange Platform</h1>
 
 Echowave is a complete real-time **language exchange platform** where users can interact via video calls, chat messages, and share media — all **for free**.

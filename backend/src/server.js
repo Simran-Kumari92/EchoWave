@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config"; 
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
@@ -9,9 +10,10 @@ import chatRoutes from "./routes/chat.route.js";
 
 import { connectDB } from "./lib/db.js";
 
-
 const app = express();
 const PORT = process.env.PORT;
+
+const __dirname = path.resolve();
 
 app.use(cors({
   origin: "http://localhost:5173",
@@ -19,15 +21,20 @@ app.use(cors({
 }))
 
 app.use(express.json()); 
-// express.json() is a middleware that parses incoming JSON requests and makes the data available in req.body
-// lets your backend read JSON data from incoming requests. 
-// You can access the data like: req.body.email  // "simran@example.com"
-app.use(cookieParser());// It enables your Express app to read cookies sent by the client (like the browser).
-//Without cookie-parser , if you try req.cookies.jwt — it will be undefined, because Express doesn’t understand cookies by default.
+
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
+
+if(process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  })
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`); // Server starts
