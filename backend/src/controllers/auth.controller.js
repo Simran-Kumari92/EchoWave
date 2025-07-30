@@ -1,4 +1,5 @@
-import { upsertStreamUser } from "../lib/stream.js";
+import { deleteStreamUser, upsertStreamUser } from "../lib/stream.js";
+import FriendRequest from "../models/FriendRequest.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
@@ -24,14 +25,13 @@ export async function signup(req,res){
       return res.status(400).json({ message: "Email already exist, please use a different one" });
     }
 
-    // const idx = Math.floor(Math.random() * 100) + 1; // generate a num between 1-100
-    const randomAvatar = 'https://xsgames.co/randomusers/avatar.php?g=male';
+
 
     const newUser = await User.create({
       email,
       fullName,
       password,
-      profilePic: randomAvatar,
+      profilePic: "", // default profile pic
     })
     
     // When a user signs up, upsertStreamUser() registers them in the 
@@ -199,5 +199,55 @@ export async function onboard(req, res) {
     // Handle unexpected server errors
     console.error("Onboarding error:", error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function deleteUser(req, res) {
+  const userId = req.user.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    // Step 1: Remove userId from other users' friends lists
+    await User.updateMany(
+      { friends: userId },
+      { $pull: { friends: userId } }
+    );
+
+    // Step 2: Delete all FriendRequests where the user is sender or recipient
+    await FriendRequest.deleteMany({
+      $or: [{ sender: userId }, { recipient: userId }],
+    });
+    console.log("deleted friends and requests")
+    // Step 3: Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Step 4: Delete Stream user (optional but important)
+    try {
+      await deleteStreamUser(userId);
+      console.log(`Stream user deleted for user ID: ${userId}`);
+    } catch (error) {
+      console.log("Error deleting Stream user:", error.message);
+      return res.status(500).json({
+        message: "User deleted from DB, but failed to delete Stream user",
+      });
+    }
+    //todo! find and delete chat channels with this userid
+    // Step 5: Clear cookie and return success
+    res.clearCookie("jwt");
+    return res
+      .status(200)
+      .json({ success: true, message: "User and all references deleted" });
+
+  } catch (error) {
+    console.error("Error deleting user and references:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to delete user and clean up references" });
   }
 }

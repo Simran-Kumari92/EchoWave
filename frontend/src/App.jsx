@@ -18,6 +18,8 @@ import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
 import Layout from "./components/Layout.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
+import SettingsPage from "./pages/SettingsPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 
 const App = () => {
@@ -53,8 +55,28 @@ const App = () => {
         ) : (
           <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
         )} />
-        <Route path="/call" element={isAuthenticated ? <CallPage /> : <Navigate to="/login" />} />
-        <Route path="/chat" element={isAuthenticated ? <ChatPage /> : <Navigate to="/login" />} />
+        
+        <Route
+          path="/call/:id"
+          element={
+            isAuthenticated && isOnboarded ? (
+              <CallPage />
+            ) : (
+              <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
+            )
+          }
+        />
+
+        <Route path="/chat/:id" element={
+          isAuthenticated && isOnboarded ? (
+            <Layout showSidebar={false}>
+              <ChatPage />
+            </Layout>
+          ) : (
+            <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
+          )
+        } />
+
         <Route path="/onboarding" element=   {isAuthenticated ? ( 
           !isOnboarded ? (
             <OnboardingPage />
@@ -66,6 +88,33 @@ const App = () => {
         )
         }
       />
+      <Route path="/settings" element={isAuthenticated ? (
+          isOnboarded ? (
+            <Layout showSidebar={true}>
+              <SettingsPage/>
+            </Layout>
+          ) : (
+            <Navigate to="/" />
+          )
+        ) : (
+          <Navigate to="/login" />
+        )
+        }
+        />
+        <Route
+          path="/edit-profile"
+          element={
+            isAuthenticated ? (
+              isOnboarded ? (
+                <ProfilePage />
+              ) : (
+                <Navigate to="/onboarding" />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
       </Routes>
 
       {/* Toast container to display success/error messages globally */}

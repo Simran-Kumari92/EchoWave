@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, onboard, signup } from "../controllers/auth.controller.js";
+import { deleteUser, login, logout, onboard, signup } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router()
@@ -9,6 +9,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 router.post("/onboarding", protectRoute , onboard);
+router.get("/deleteUser",protectRoute,deleteUser); //not sure if it should be get method or something else
 
 // check if user is logged in 
 router.get("/me", protectRoute, (req, res) => {

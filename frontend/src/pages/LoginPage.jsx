@@ -257,7 +257,7 @@ const LoginPage = () => {
 
           {/* Image and text */}
           <div className="relative z-10 p-10 text-center max-w-sm">
-            <img src="/i.svg" alt="language chat" className="w-full h-auto max-w-[350px] md:max-w-[400px] scale-105 rounded-xl" />
+            <img src="/learning.png" alt="language chat" className="w-full h-auto max-w-[350px] md:max-w-[400px] scale-105 rounded-xl" />
             <h2 className="text-xl font-semibold mt-6">Connect with language partners worldwide</h2>
             <p className="text-sm text-gray-400 mt-2">
               Practice conversations, make friends, and improve your language skills together.

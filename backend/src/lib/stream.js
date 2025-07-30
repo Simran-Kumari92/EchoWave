@@ -31,3 +31,14 @@ export const generateStreamToken = (userId) => {
     console.error("Error generating Stream token:", error);
   }
 };
+
+export const deleteStreamUser = async (userId)=>{
+    try {
+        //todo! also delete channels for chats with this user
+        const userIdStr = userId.toString();
+        await streamClient.deleteUser(userIdStr);
+        console.log("Stream user deleted successfully!");
+    } catch (error) {
+        console.log("Error deleting Stream user: ",error);
+    }
+}
