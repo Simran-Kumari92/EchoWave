@@ -9,7 +9,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 router.post("/onboarding", protectRoute , onboard);
-router.get("/deleteUser",protectRoute,deleteUser); //not sure if it should be get method or something else
+router.delete("/deleteUser",protectRoute,deleteUser);
 
 // check if user is logged in 
 router.get("/me", protectRoute, (req, res) => {

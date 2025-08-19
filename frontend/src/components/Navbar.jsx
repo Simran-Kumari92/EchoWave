@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, LogOutIcon, ShipWheelIcon  , Search} from "lucide-react";
+import { BellIcon, LogOutIcon  , Search} from "lucide-react";
 import ThemeSelector from "./ThemeSelector.jsx";
 import useLogout from "../hooks/useLogout.js";
+import { useQuery } from "@tanstack/react-query";
+import { getFriendRequests } from "../lib/api.js";
 
 const Navbar = () => {
   const { authUser } = useAuthUser();
@@ -10,6 +12,16 @@ const Navbar = () => {
   const isChatPage = location.pathname?.startsWith("/chat");
   
   const {logoutMutation} = useLogout()
+
+  const { data: friendRequests, isLoading } = useQuery({
+    queryKey: ["friendRequests"],
+    queryFn: getFriendRequests,
+    refetchInterval: 5000, // every 5 seconds
+  });
+
+
+  const x = friendRequests?.incomingReqs.length || 0;
+  const y = friendRequests?.acceptedReqs.length || 0;
 
   return <nav className="bg-base-200 border-b border-base-300 sticky top-0 z-30 h-16 flex items-center">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,6 +68,11 @@ const Navbar = () => {
               <button className="btn btn-ghost btn-circle">
                 <BellIcon className="h-6 w-6 text-base-content opacity-70" />
               </button>
+               {!isLoading && (x + y > 0) && (
+                  <span className="badge badge-primary ml-2 -translate-x-8 -translate-y-4">
+                    {x + y}
+                  </span>
+                )}
             </Link>
           </div>
           <ThemeSelector />

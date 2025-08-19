@@ -203,31 +203,40 @@ export async function onboard(req, res) {
 }
 
 export async function deleteUser(req, res) {
-  const userId = req.user.id;
-
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
-  }
-
   try {
+    const userId = req.user.id;
+    const {password}  = req.body.password;
+
+    if (!userId || !password) {
+      return res.status(400).json({ message: "User ID and password are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isPasswordCorrect = await user.matchPassword(password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Incorrect password" });
+    }
+
     // Step 1: Remove userId from other users' friends lists
-    await User.updateMany(
-      { friends: userId },
-      { $pull: { friends: userId } }
-    );
+    await User.updateMany({ friends: userId }, { $pull: { friends: userId } });
 
     // Step 2: Delete all FriendRequests where the user is sender or recipient
     await FriendRequest.deleteMany({
       $or: [{ sender: userId }, { recipient: userId }],
     });
-    console.log("deleted friends and requests")
+    console.log("Deleted friends and requests");
+
     // Step 3: Delete the user
     const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Step 4: Delete Stream user (optional but important)
+    // Step 4: Delete Stream user
     try {
       await deleteStreamUser(userId);
       console.log(`Stream user deleted for user ID: ${userId}`);
@@ -240,14 +249,11 @@ export async function deleteUser(req, res) {
     //todo! find and delete chat channels with this userid
     // Step 5: Clear cookie and return success
     res.clearCookie("jwt");
-    return res
-      .status(200)
-      .json({ success: true, message: "User and all references deleted" });
+    return res.status(200).json({ success: true, message: "User and all references deleted" });
 
   } catch (error) {
     console.error("Error deleting user and references:", error);
-    return res
-      .status(500)
-      .json({ message: "Failed to delete user and clean up references" });
+    return res.status(500).json({ message: "Failed to delete user and clean up references" });
   }
 }
+
