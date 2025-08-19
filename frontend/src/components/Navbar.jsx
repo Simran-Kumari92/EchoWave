@@ -97,7 +97,7 @@ const Navbar = () => {
           <img
             src={authUser?.profilePic || "/user.png"}
             alt="User Avatar Large"
-            className="h-96 w-96 rounded-full"
+            className="h-100 w-96 rounded-full"
             onClick={(e) => e.stopPropagation()} // prevents closing on image click
           />
         </div>

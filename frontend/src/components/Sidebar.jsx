@@ -1,11 +1,74 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { StreamChat } from "stream-chat";
 import useAuthUser from "../hooks/useAuthUser";
+import { getStreamToken } from "../lib/api";
 import { BellIcon, HomeIcon, Settings, UsersIcon } from "lucide-react";
+const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
   const currentPath = location.pathname;
+
+const [totalUnread, setTotalUnread] = useState(0);
+  const [chatClient, setChatClient] = useState(null);
+
+  const { data: tokenData } = useQuery({
+    queryKey: ["streamToken"],
+    queryFn: getStreamToken,
+    enabled: !!authUser,
+  });
+
+  useEffect(() => {
+    const initStreamChat = async () => {
+      if (!authUser || !tokenData?.token) return;
+
+      try {
+        const client = StreamChat.getInstance(STREAM_API_KEY);
+
+        if (client.userID !== authUser._id) {
+          if (client.userID) await client.disconnectUser();
+
+          await client.connectUser(
+            {
+              id: authUser._id,
+              name: authUser.fullName,
+              image: authUser.profilePic,
+            },
+            tokenData.token
+          );
+        }
+
+        const { total_unread_count } = await client.getUnreadCount();
+        setTotalUnread(total_unread_count);
+
+        client.on((event) => {
+          if (
+            event.type === "notification.message_new" ||
+            event.type === "notification.mark_read" ||
+            event.type === "notification.channel_mark_read" ||
+            event.type === "message.read"
+          ) {
+            client.getUnreadCount().then((res) =>
+              setTotalUnread(res.total_unread_count)
+            );
+          }
+        });
+
+        setChatClient(client);
+      } catch (error) {
+        console.error("Stream sidebar client error:", error);
+      }
+    };
+
+    initStreamChat();
+
+    return () => {
+      if (chatClient) chatClient.off();
+    };
+  }, [authUser, tokenData]);
 
   return (
     <aside className="w-64 bg-base-200 border-r border-base-300 hidden lg:flex flex-col h-screen sticky top-0">
@@ -39,6 +102,11 @@ const Sidebar = () => {
         >
           <UsersIcon className="size-5 text-base-content opacity-70" />
           <span>Chats</span>
+          {totalUnread > 0 && (
+              <span className="badge badge-primary ml-2 -translate-x-0 -translate-y-1">
+                {totalUnread > 9 ? "9+" : totalUnread}
+              </span>
+            )}
         </Link>
 
         <Link
