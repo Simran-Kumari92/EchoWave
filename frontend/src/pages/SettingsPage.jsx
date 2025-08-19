@@ -16,6 +16,7 @@ const SettingsPage = () => {
             toast.error(error.response?.data?.message || "delete failed");
         },
     })
+    
     const handleDelete = (e) => {
         e.preventDefault();
         mutateDelete();

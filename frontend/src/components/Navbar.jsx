@@ -8,12 +8,6 @@ const Navbar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
   const isChatPage = location.pathname?.startsWith("/chat");
-
-  // const queryClient = useQueryClient();
-  // const { mutate: logoutMutation } = useMutation({
-  //   mutationFn: logout,
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
-  // });
   
   const {logoutMutation} = useLogout()
 
@@ -44,20 +38,19 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-8 sm:gap-6 ml-auto">
-            <img src="/japanese.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/english.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/hindi.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/spanish.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/french.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/german.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/chinese.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/portuguese.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/korean.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/russian.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/arabic.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/italian.png" alt="Connecting People" className="w-8 h-8" />
-            <img src="/turkish.png" alt="Connecting People" className="w-8 h-8" />
+            <img src="/gloab.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/english.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/german.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/bonjour.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/languages.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/ch.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/portuguese.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/language-exchange.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/letter-b.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/understanding.png" alt="Connecting People" className="w-10 h-10" />
+            <img src="/hola.png" alt="Connecting People" className="w-10 h-10" />
           </div>
+          
           <div className="flex items-center gap-3 sm:gap-4 ml-auto">
             <Link to={"/notifications"}>
               <button className="btn btn-ghost btn-circle">

@@ -20,6 +20,7 @@ import Layout from "./components/Layout.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import AllChats from "./pages/AllChats.jsx";
 
 
 const App = () => {
@@ -114,6 +115,21 @@ const App = () => {
               <Navigate to="/login" />
             )
           }
+        />
+        <Route path="/allchats" element={isAuthenticated ? (
+          isOnboarded ? (
+            <Layout showSidebar={true}>
+              <AllChats />
+            </Layout>
+          ) :
+            (
+              <Navigate to="/" />
+            )
+        ) :
+          (
+            <Navigate to="/login" />
+          )
+        }
         />
       </Routes>
 

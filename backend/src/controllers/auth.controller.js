@@ -151,7 +151,7 @@ export async function onboard(req, res) {
     const userId = req.user._id;
 
     // Extract onboarding fields from the request body
-    const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
+    const { fullName, bio, nativeLanguage, learningLanguage, location , profilePic} = req.body;
 
     // Validate that all required fields are present
     if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
