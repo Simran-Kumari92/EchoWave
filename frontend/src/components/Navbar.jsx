@@ -1,15 +1,20 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
-import { BellIcon, LogOutIcon  , Search} from "lucide-react";
+import { BellIcon, LogOutIcon} from "lucide-react";
 import ThemeSelector from "./ThemeSelector.jsx";
 import useLogout from "../hooks/useLogout.js";
 import { useQuery } from "@tanstack/react-query";
 import { getFriendRequests } from "../lib/api.js";
+import SearchUsers from "./SearchUsers.jsx";
+import { useState } from "react";
+
 
 const Navbar = () => {
   const { authUser } = useAuthUser();
   const location = useLocation();
   const isChatPage = location.pathname?.startsWith("/chat");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const {logoutMutation} = useLogout()
 
@@ -40,14 +45,7 @@ const Navbar = () => {
             </div>
           )}
           {/* Search Bar for users by username */}
-          <div className="hidden md:flex items-center gap-2 px-4">
-            <Search className="w-7 h-7 text-base-content opacity-70 " />
-            <input
-              type="text"
-              placeholder="Search users..."
-              className="input input-bordered input-sm w-48 focus:outline-none hover:scale-105"
-            />
-          </div>
+         <SearchUsers />
 
           <div className="hidden md:flex items-center gap-8 sm:gap-6 ml-auto">
             <img src="/gloab.png" alt="Connecting People" className="w-10 h-10" />
@@ -78,7 +76,9 @@ const Navbar = () => {
           <ThemeSelector />
 
           <div className="avatar">
-            <div className="w-9 rounded-full">
+            <div className="w-9 rounded-full hover:scale-105 transition-transform duration-100" 
+            onClick={() => setIsModalOpen(true)}
+            >
               <img src={authUser?.profilePic  || "/user.png"} alt="User Avatar" rel="noreferrer" />
             </div>
           </div>
@@ -88,6 +88,20 @@ const Navbar = () => {
             <LogOutIcon className="h-6 w-6 text-base-content opacity-70" />
           </button>
       </div>
+      {/* Modal for user profile */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <img
+            src={authUser?.profilePic || "/user.png"}
+            alt="User Avatar Large"
+            className="h-96 w-96 rounded-full"
+            onClick={(e) => e.stopPropagation()} // prevents closing on image click
+          />
+        </div>
+      )}
     </div>
   </nav>
 };

@@ -6,6 +6,7 @@ import {
   getMyFriends,
   getOutgoingFriendReqs,
   getRecommendedUsers,
+  searchUsers,
   sendFriendRequest
 } from "../controllers/user.controller.js";
 
@@ -32,5 +33,7 @@ router.get("/friend-requests", getFriendRequests);
 
 // Shows all friend requests you have sent but the other person hasn’t accepted yet.
 router.get("/outgoing-friend-requests", getOutgoingFriendReqs);
+
+router.get("/search", searchUsers); 
 
 export default router;
